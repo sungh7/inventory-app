@@ -14,7 +14,8 @@
     "react-dom": "^19.0.0",
     "axios": "^1.7.0",
     "recharts": "^2.15.0",
-    "date-fns": "^4.1.0"
+    "date-fns": "^4.1.0",
+    "@zxing/browser": "^0.1.4"
   },
   "devDependencies": {
     "@types/node": "^22",

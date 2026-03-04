@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import TopNav from '../../_components/TopNav';
 
@@ -9,6 +9,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export default function NewItemPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [form, setForm] = useState({
@@ -20,6 +21,13 @@ export default function NewItemPage() {
     min_stock: 0,
     supplier_id: '' as string | number,
   });
+
+  useEffect(() => {
+    const barcode = searchParams.get('barcode');
+    if (barcode) {
+      setForm((prev) => ({ ...prev, barcode }));
+    }
+  }, [searchParams]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
