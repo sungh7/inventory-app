@@ -1,15 +1,27 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import TopNav from '../../_components/TopNav';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-export default function NewItemPage() {
-  const router = useRouter();
+function BarcodeLoader({ onBarcode }: { onBarcode: (barcode: string) => void }) {
   const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const barcode = searchParams.get('barcode');
+    if (barcode) {
+      onBarcode(barcode);
+    }
+  }, [searchParams, onBarcode]);
+
+  return null;
+}
+
+function NewItemForm() {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [form, setForm] = useState({
@@ -22,12 +34,9 @@ export default function NewItemPage() {
     supplier_id: '' as string | number,
   });
 
-  useEffect(() => {
-    const barcode = searchParams.get('barcode');
-    if (barcode) {
-      setForm((prev) => ({ ...prev, barcode }));
-    }
-  }, [searchParams]);
+  const handleBarcodeFromUrl = (barcode: string) => {
+    setForm((prev) => ({ ...prev, barcode }));
+  };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -75,6 +84,9 @@ export default function NewItemPage() {
   return (
     <div className="min-h-screen bg-gray-100">
       <TopNav />
+      <Suspense fallback={null}>
+        <BarcodeLoader onBarcode={handleBarcodeFromUrl} />
+      </Suspense>
       <div className="max-w-3xl mx-auto py-10 px-4">
         <h1 className="text-2xl font-bold mb-6">상품 추가</h1>
 
@@ -185,5 +197,13 @@ export default function NewItemPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function NewItemPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-100 flex items-center justify-center">로딩 중...</div>}>
+      <NewItemForm />
+    </Suspense>
   );
 }
