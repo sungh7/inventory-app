@@ -34,7 +34,7 @@ export default function TopNav() {
     const start = async () => {
       if (!videoRef.current) return;
       try {
-        await reader.decodeFromVideoDevice(undefined, videoRef.current, (result) => {
+        await reader.decodeFromVideoDevice(null, videoRef.current, (result) => {
           if (result) {
             const code = result.getText();
             setIsScanning(false);
