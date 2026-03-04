@@ -39,7 +39,7 @@ export default function TopNav() {
           if (result) {
             const code = result.getText();
             setIsScanning(false);
-            reader.reset();
+            (reader as any)?.reset?.();
             router.push(`/dashboard/items/new?barcode=${encodeURIComponent(code)}`);
           }
         });
@@ -51,7 +51,7 @@ export default function TopNav() {
     start();
 
     return () => {
-      reader.reset();
+      (reader as any)?.reset?.();
     };
   }, [isScanning, router]);
 
@@ -100,7 +100,7 @@ export default function TopNav() {
               <button
                 onClick={() => {
                   setIsScanning(false);
-                  readerRef.current?.reset();
+                  (readerRef.current as any)?.reset?.();
                 }}
                 className="text-gray-500 hover:text-gray-800"
               >
