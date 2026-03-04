@@ -10,12 +10,12 @@ interface Item {
   id: number;
   name: string;
   barcode: string | null;
-  quantity: number;
+  category: string;
   unit: string;
-  low_stock_threshold: number;
-  category: string | null;
-  location: string | null;
-  created_at: string;
+  unit_price: number;
+  min_stock: number;
+  supplier_id: number | null;
+  current_stock: number | null;
 }
 
 export default function DashboardPage() {
@@ -46,13 +46,16 @@ export default function DashboardPage() {
         },
       });
       
-      const itemsData = response.data.items || [];
+      const itemsData: Item[] = response.data || [];
       setItems(itemsData);
-      
+
       // 통계 계산
       setStats({
         total: itemsData.length,
-        lowStock: itemsData.filter((item: Item) => item.quantity <= item.low_stock_threshold).length,
+        lowStock: itemsData.filter(
+          (item: Item) =>
+            (item.current_stock ?? 0) <= (item.min_stock ?? 0) && (item.min_stock ?? 0) > 0
+        ).length,
       });
     } catch (err: any) {
       if (err.response?.status === 401) {
@@ -163,16 +166,16 @@ export default function DashboardPage() {
                       <p className="text-sm font-medium text-indigo-600">{item.name}</p>
                       <p className="text-sm text-gray-500">
                         {item.barcode && `바코드: ${item.barcode} | `}
-                        카테고리: {item.category || '미분류'} | 위치: {item.location || '미지정'}
+                        카테고리: {item.category || '기타'} | 최소재고: {item.min_stock ?? 0} {item.unit}
                       </p>
                     </div>
                     <div className="flex items-center">
                       <span className={`px-3 py-1 text-sm font-semibold rounded-full ${
-                        item.quantity <= item.low_stock_threshold
+                        (item.current_stock ?? 0) <= (item.min_stock ?? 0) && (item.min_stock ?? 0) > 0
                           ? 'bg-red-100 text-red-800'
                           : 'bg-green-100 text-green-800'
                       }`}>
-                        {item.quantity} {item.unit}
+                        {item.current_stock ?? 0} {item.unit}
                       </span>
                     </div>
                   </div>
