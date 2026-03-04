@@ -52,6 +52,10 @@ PUBLIC_PATHS = {"/health", "/auth/login", "/auth/register", "/docs", "/openapi.j
 
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
+    # CORS preflight는 인증 없이 통과
+    if request.method == "OPTIONS":
+        return await call_next(request)
+
     # PUBLIC_PATHS는 통과
     if request.url.path in PUBLIC_PATHS or request.url.path.startswith("/docs"):
         return await call_next(request)
