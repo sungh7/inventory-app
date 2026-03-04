@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import TopNav from './_components/TopNav';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -69,10 +70,6 @@ export default function DashboardPage() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    router.push('/login');
-  };
 
   if (loading) {
     return (
@@ -84,23 +81,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-bold text-gray-900">재고 관리 시스템</h1>
-            </div>
-            <div className="flex items-center">
-              <button
-                onClick={handleLogout}
-                className="ml-4 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
-              >
-                로그아웃
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <TopNav />
 
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {error && (

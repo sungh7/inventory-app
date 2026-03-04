@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import TopNav from '../../_components/TopNav';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -65,6 +66,7 @@ export default function NewItemPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
+      <TopNav />
       <div className="max-w-3xl mx-auto py-10 px-4">
         <h1 className="text-2xl font-bold mb-6">상품 추가</h1>
 
