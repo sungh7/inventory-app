@@ -19,15 +19,15 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const params = new URLSearchParams();
-      params.append('username', username);
-      params.append('password', password);
-
-      const response = await axios.post(`${API_URL}/auth/login`, params, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      });
+      const response = await axios.post(
+        `${API_URL}/auth/login`,
+        { username, password },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
       localStorage.setItem('token', response.data.access_token);
       router.push('/dashboard');
