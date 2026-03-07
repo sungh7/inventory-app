@@ -11,7 +11,7 @@ function BarcodeLoader({ onBarcode }: { onBarcode: (barcode: string) => void }) 
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const barcode = searchParams.get('barcode');
+    const barcode = searchParams?.get('barcode');
     if (barcode) {
       onBarcode(barcode);
     }
