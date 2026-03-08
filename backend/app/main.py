@@ -35,7 +35,7 @@ app = FastAPI(title="Inventory API", version="0.2.0", lifespan=lifespan)
 # CORS - 환경변수에서 허용 도메인 읽기
 allowed_origins = os.getenv(
     "ALLOWED_ORIGINS",
-    "http://localhost:8081,http://localhost:19006"
+    "http://localhost:8081,http://localhost:19006,https://inventory-app-olive-seven.vercel.app"
 ).split(",")
 
 app.add_middleware(
