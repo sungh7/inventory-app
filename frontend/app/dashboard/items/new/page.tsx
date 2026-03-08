@@ -61,11 +61,16 @@ function NewItemFormContent() {
 
       router.push('/dashboard');
     } catch (err: any) {
+      console.error('Item creation error:', err.response?.data);
       if (err.response?.status === 401) {
         localStorage.removeItem('token');
         router.push('/login');
       } else {
-        setError(err.response?.data?.detail || '상품 생성에 실패했습니다.');
+        const detail = err.response?.data?.detail;
+        const errorMsg = typeof detail === 'string' 
+          ? detail 
+          : JSON.stringify(detail) || '상품 생성에 실패했습니다.';
+        setError(errorMsg);
       }
     } finally {
       setLoading(false);
