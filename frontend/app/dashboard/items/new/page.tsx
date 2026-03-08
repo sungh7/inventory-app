@@ -7,21 +7,9 @@ import TopNav from '../../_components/TopNav';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-function BarcodeLoader({ onBarcode }: { onBarcode: (barcode: string) => void }) {
-  const searchParams = useSearchParams();
-
-  useEffect(() => {
-    const barcode = searchParams?.get('barcode');
-    if (barcode) {
-      onBarcode(barcode);
-    }
-  }, [searchParams, onBarcode]);
-
-  return null;
-}
-
-function NewItemForm() {
+function NewItemFormContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [form, setForm] = useState({
@@ -34,9 +22,12 @@ function NewItemForm() {
     supplier_id: '' as string | number,
   });
 
-  const handleBarcodeFromUrl = (barcode: string) => {
-    setForm((prev) => ({ ...prev, barcode }));
-  };
+  useEffect(() => {
+    const barcode = searchParams?.get('barcode');
+    if (barcode) {
+      setForm((prev) => ({ ...prev, barcode }));
+    }
+  }, [searchParams]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -84,9 +75,6 @@ function NewItemForm() {
   return (
     <div className="min-h-screen bg-gray-100">
       <TopNav />
-      <Suspense fallback={null}>
-        <BarcodeLoader onBarcode={handleBarcodeFromUrl} />
-      </Suspense>
       <div className="max-w-3xl mx-auto py-10 px-4">
         <h1 className="text-2xl font-bold mb-6">상품 추가</h1>
 
@@ -203,7 +191,7 @@ function NewItemForm() {
 export default function NewItemPage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-gray-100 flex items-center justify-center">로딩 중...</div>}>
-      <NewItemForm />
+      <NewItemFormContent />
     </Suspense>
   );
 }
