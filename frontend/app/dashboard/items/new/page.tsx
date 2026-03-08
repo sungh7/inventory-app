@@ -15,7 +15,7 @@ function NewItemFormContent() {
   const [form, setForm] = useState({
     name: '',
     barcode: '',
-    category: 'OTHER',
+    category: 'other',
     unit: '',
     unit_price: 0,
     min_stock: 0,
@@ -114,11 +114,11 @@ function NewItemFormContent() {
               onChange={onChange}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
             >
-              <option value="MEAT">육류</option>
-              <option value="VEGETABLE">채소</option>
-              <option value="SAUCE">소스</option>
-              <option value="DRINK">음료</option>
-              <option value="OTHER">기타</option>
+              <option value="meat">육류</option>
+              <option value="vegetable">채소</option>
+              <option value="sauce">소스</option>
+              <option value="drink">음료</option>
+              <option value="other">기타</option>
             </select>
           </div>
 
