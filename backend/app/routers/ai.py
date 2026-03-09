@@ -29,7 +29,13 @@ def forecast_item(item_id: int, days: int = 14, db: Session = Depends(get_db)):
 
 @router.get("/forecast")
 def forecast_all(days: int = 14, db: Session = Depends(get_db)):
-    """전체 품목 소비량 예측 (재고 있는 품목만)"""
+    """
+    전체 품목 소비량 예측 (재고 있는 품목만)
+    
+    [W-4] TODO: 캐싱 도입 권장
+    - 품목 수가 많아지면 응답 시간 선형 증가
+    - Redis 또는 메모리 캐시 (TTL 1시간) 적용 고려
+    """
     from ..models import Item, Inventory
     items = db.query(Item).join(Inventory).all()
     results = []
@@ -48,7 +54,13 @@ def forecast_all(days: int = 14, db: Session = Depends(get_db)):
 
 @router.get("/smart-order")
 def smart_order_recommend(db: Session = Depends(get_db)):
-    """AI 기반 발주 추천 (전 품목 분석)"""
+    """
+    AI 기반 발주 추천 (전 품목 분석)
+    
+    [W-4] TODO: 캐싱 도입 권장
+    - 품목 수 증가 시 성능 저하
+    - 결과를 1시간 캐싱하거나 백그라운드 작업으로 전환 고려
+    """
     from ..models import Item
     items = db.query(Item).all()
     recommendations = []
