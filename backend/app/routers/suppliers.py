@@ -4,6 +4,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 from ..core.database import get_db
+from ..core.auth import require_admin
 from ..models import Supplier
 
 router = APIRouter()
@@ -40,7 +41,7 @@ def list_suppliers(db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=SupplierOut, status_code=201)
-def create_supplier(payload: SupplierCreate, db: Session = Depends(get_db)):
+def create_supplier(payload: SupplierCreate, db: Session = Depends(get_db), _=Depends(require_admin)):
     supplier = Supplier(**payload.model_dump())
     db.add(supplier)
     db.commit()
@@ -49,7 +50,7 @@ def create_supplier(payload: SupplierCreate, db: Session = Depends(get_db)):
 
 
 @router.patch("/{supplier_id}", response_model=SupplierOut)
-def update_supplier(supplier_id: int, payload: SupplierUpdate, db: Session = Depends(get_db)):
+def update_supplier(supplier_id: int, payload: SupplierUpdate, db: Session = Depends(get_db), _=Depends(require_admin)):
     supplier = db.query(Supplier).filter(Supplier.id == supplier_id).first()
     if not supplier:
         raise HTTPException(status_code=404, detail="공급업체를 찾을 수 없습니다")
@@ -62,7 +63,7 @@ def update_supplier(supplier_id: int, payload: SupplierUpdate, db: Session = Dep
 
 
 @router.delete("/{supplier_id}", status_code=204)
-def delete_supplier(supplier_id: int, db: Session = Depends(get_db)):
+def delete_supplier(supplier_id: int, db: Session = Depends(get_db), _=Depends(require_admin)):
     supplier = db.query(Supplier).filter(Supplier.id == supplier_id).first()
     if not supplier:
         raise HTTPException(status_code=404, detail="공급업체를 찾을 수 없습니다")

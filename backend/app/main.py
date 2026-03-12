@@ -1,5 +1,4 @@
 from contextlib import asynccontextmanager
-import os
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,9 +16,17 @@ from .routers import menus, sales, reports
 from .routers import staff as staff_router
 from .routers import auth as auth_router
 
+IS_PRODUCTION = settings.APP_ENV.lower() == "production"
+
+if IS_PRODUCTION:
+    if settings.SECRET_KEY == "change-me-in-production":
+        raise RuntimeError("Production에서는 기본 SECRET_KEY를 사용할 수 없습니다")
+    if settings.AUTO_CREATE_TABLES:
+        raise RuntimeError("Production에서는 AUTO_CREATE_TABLES=false 로 설정해야 합니다")
+
 # DB 테이블 자동 생성 (개발 편의용)
 # 프로덕션/마이그레이션 관리 시: AUTO_CREATE_TABLES=false 설정 후 `alembic upgrade head` 사용
-if os.getenv("AUTO_CREATE_TABLES", "true").lower() == "true":
+if settings.AUTO_CREATE_TABLES:
     Base.metadata.create_all(bind=engine)
 
 
@@ -30,13 +37,17 @@ async def lifespan(app: FastAPI):
     scheduler.shutdown()
 
 
-app = FastAPI(title="Inventory API", version="0.2.0", lifespan=lifespan)
+app = FastAPI(
+    title="Inventory API",
+    version="0.2.0",
+    lifespan=lifespan,
+    docs_url="/docs" if settings.ENABLE_API_DOCS else None,
+    redoc_url="/redoc" if settings.ENABLE_API_DOCS else None,
+    openapi_url="/openapi.json" if settings.ENABLE_API_DOCS else None,
+)
 
 # CORS - 환경변수에서 허용 도메인 읽기
-allowed_origins = os.getenv(
-    "ALLOWED_ORIGINS",
-    "http://localhost:8081,http://localhost:19006,https://inventory-app-olive-seven.vercel.app"
-).split(",")
+allowed_origins = [origin.strip() for origin in settings.ALLOWED_ORIGINS.split(",") if origin.strip()]
 
 app.add_middleware(
     CORSMiddleware,
@@ -47,7 +58,9 @@ app.add_middleware(
 )
 
 # 인증 불필요 경로
-PUBLIC_PATHS = {"/health", "/auth/login", "/auth/register", "/docs", "/openapi.json", "/redoc"}
+PUBLIC_PATHS = {"/health", "/auth/login", "/auth/register"}
+if settings.ENABLE_API_DOCS:
+    PUBLIC_PATHS.update({"/docs", "/openapi.json", "/redoc"})
 
 
 @app.middleware("http")

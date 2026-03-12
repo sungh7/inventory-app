@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from datetime import datetime, timedelta, timezone
 
 from ..core.database import get_db
+from ..core.auth import require_admin
 from ..models import Staff, Transaction, Sale, TransactionType
 
 router = APIRouter()
@@ -143,7 +144,7 @@ def list_staff(db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=StaffOut, status_code=201)
-def create_staff(payload: StaffCreate, db: Session = Depends(get_db)):
+def create_staff(payload: StaffCreate, db: Session = Depends(get_db), _=Depends(require_admin)):
     """직원 등록"""
     staff = Staff(
         name=payload.name,
@@ -157,7 +158,7 @@ def create_staff(payload: StaffCreate, db: Session = Depends(get_db)):
 
 
 @router.patch("/{staff_id}", response_model=StaffOut)
-def update_staff(staff_id: int, payload: StaffUpdate, db: Session = Depends(get_db)):
+def update_staff(staff_id: int, payload: StaffUpdate, db: Session = Depends(get_db), _=Depends(require_admin)):
     """직원 정보 수정"""
     staff = db.query(Staff).filter(Staff.id == staff_id).first()
     if not staff:
@@ -173,7 +174,7 @@ def update_staff(staff_id: int, payload: StaffUpdate, db: Session = Depends(get_
 
 
 @router.delete("/{staff_id}", status_code=204)
-def deactivate_staff(staff_id: int, db: Session = Depends(get_db)):
+def deactivate_staff(staff_id: int, db: Session = Depends(get_db), _=Depends(require_admin)):
     """직원 비활성화 (실제 삭제 아님)"""
     staff = db.query(Staff).filter(Staff.id == staff_id).first()
     if not staff:

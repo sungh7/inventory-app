@@ -112,18 +112,24 @@ Vercel 환경변수에도 동일하게 `NEXT_PUBLIC_API_URL` 설정 필요.
 
 `backend/.env.example` 기준으로 아래 값 설정 권장:
 
+- `APP_ENV=production`
 - `DATABASE_URL`
 - `SECRET_KEY`
 - `ALLOWED_ORIGINS`
 - `ADMIN_USERNAME`
 - `ADMIN_PASSWORD`
+- `AUTO_CREATE_TABLES=false`
+- `ENABLE_API_DOCS=false`
 
 예시:
 
 ```env
+APP_ENV=production
 DATABASE_URL=postgresql://...
 SECRET_KEY=change-this-in-production
-ALLOWED_ORIGINS=https://your-frontend.vercel.app,http://localhost:8081,http://localhost:19006
+ALLOWED_ORIGINS=https://your-frontend.vercel.app
+AUTO_CREATE_TABLES=false
+ENABLE_API_DOCS=false
 ```
 
 ### 배포 시 주의
@@ -131,6 +137,9 @@ ALLOWED_ORIGINS=https://your-frontend.vercel.app,http://localhost:8081,http://lo
 - 프로덕션에서는 SQLite 대신 **Railway PostgreSQL** 사용 권장
 - `seed_data.py --reset` 는 **데모/개발 DB 전용**으로 사용 권장
 - 배포 후 CORS에 Vercel 도메인이 포함되어야 웹 대시보드가 정상 연결됨
+- 프로덕션에서는 기본 `SECRET_KEY` 사용 금지
+- 프로덕션에서는 API Docs 비활성화 권장
+- 관리자 변경 작업(품목/공급업체/직원/메뉴/발주 상태 변경)은 admin 권한 필요
 
 ## 주요 기능
 

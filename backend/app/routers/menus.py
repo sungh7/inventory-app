@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from datetime import datetime
 
 from ..core.database import get_db
+from ..core.auth import require_admin
 from ..models import Menu, RecipeItem, Item
 
 router = APIRouter()
@@ -140,7 +141,7 @@ def list_menus(db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=MenuOut, status_code=201)
-def create_menu(payload: MenuCreate, db: Session = Depends(get_db)):
+def create_menu(payload: MenuCreate, db: Session = Depends(get_db), _=Depends(require_admin)):
     menu = Menu(**payload.model_dump())
     db.add(menu)
     db.commit()
@@ -154,7 +155,7 @@ def get_menu(menu_id: int, db: Session = Depends(get_db)):
 
 
 @router.patch("/{menu_id}", response_model=MenuOut)
-def update_menu(menu_id: int, payload: MenuUpdate, db: Session = Depends(get_db)):
+def update_menu(menu_id: int, payload: MenuUpdate, db: Session = Depends(get_db), _=Depends(require_admin)):
     menu = _load_menu(db, menu_id)
     for field, value in payload.model_dump(exclude_none=True).items():
         setattr(menu, field, value)
@@ -163,7 +164,7 @@ def update_menu(menu_id: int, payload: MenuUpdate, db: Session = Depends(get_db)
 
 
 @router.delete("/{menu_id}", status_code=204)
-def delete_menu(menu_id: int, db: Session = Depends(get_db)):
+def delete_menu(menu_id: int, db: Session = Depends(get_db), _=Depends(require_admin)):
     menu = db.query(Menu).filter(Menu.id == menu_id).first()
     if not menu:
         raise HTTPException(status_code=404, detail="메뉴를 찾을 수 없습니다")
@@ -172,7 +173,7 @@ def delete_menu(menu_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/{menu_id}/recipe", response_model=MenuOut)
-def set_recipe(menu_id: int, body: RecipeSetBody, db: Session = Depends(get_db)):
+def set_recipe(menu_id: int, body: RecipeSetBody, db: Session = Depends(get_db), _=Depends(require_admin)):
     menu = db.query(Menu).filter(Menu.id == menu_id).first()
     if not menu:
         raise HTTPException(status_code=404, detail="메뉴를 찾을 수 없습니다")

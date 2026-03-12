@@ -14,6 +14,7 @@ from datetime import date, timedelta
 import io
 
 from ..core.database import get_db
+from ..core.auth import require_admin
 from ..core.email_sender import send_order_email
 from ..models import Item, Inventory, Order, OrderItem, OrderStatus, Transaction, TransactionType
 from sqlalchemy import func, case
@@ -104,7 +105,7 @@ def recommend_orders(db: Session = Depends(get_db)):
 
 # --- 발주서 CRUD ---
 @router.post("/", response_model=OrderOut, status_code=201)
-def create_order(payload: OrderCreate, db: Session = Depends(get_db)):
+def create_order(payload: OrderCreate, db: Session = Depends(get_db), _=Depends(require_admin)):
     order = Order(
         supplier_id=payload.supplier_id,
         memo=payload.memo,
@@ -163,6 +164,7 @@ async def update_status(
     status: OrderStatus,
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
+    _=Depends(require_admin),
 ):
     order = (
         db.query(Order)
@@ -240,6 +242,7 @@ async def send_email_manual(
     order_id: int,
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
+    _=Depends(require_admin),
 ):
     """발주서 이메일 수동 발송"""
     order = (
@@ -288,7 +291,7 @@ async def send_email_manual(
 
 # --- PDF 발주서 ---
 @router.get("/{order_id}/pdf")
-def export_pdf(order_id: int, db: Session = Depends(get_db)):
+def export_pdf(order_id: int, db: Session = Depends(get_db), _=Depends(require_admin)):
     order = db.query(Order).filter(Order.id == order_id).first()
     if not order:
         raise HTTPException(status_code=404, detail="발주서 없음")

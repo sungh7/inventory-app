@@ -4,6 +4,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 from ..core.database import get_db
+from ..core.auth import require_admin
 from ..models import Item, Inventory, ItemCategory
 
 router = APIRouter()
@@ -79,7 +80,7 @@ def get_item(item_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=ItemOut, status_code=201)
-def create_item(payload: ItemCreate, db: Session = Depends(get_db)):
+def create_item(payload: ItemCreate, db: Session = Depends(get_db), _=Depends(require_admin)):
     if payload.barcode:
         exists = db.query(Item).filter(Item.barcode == payload.barcode).first()
         if exists:
@@ -96,7 +97,7 @@ def create_item(payload: ItemCreate, db: Session = Depends(get_db)):
 
 
 @router.patch("/{item_id}", response_model=ItemOut)
-def update_item(item_id: int, payload: ItemUpdate, db: Session = Depends(get_db)):
+def update_item(item_id: int, payload: ItemUpdate, db: Session = Depends(get_db), _=Depends(require_admin)):
     item = db.query(Item).filter(Item.id == item_id).first()
     if not item:
         raise HTTPException(status_code=404, detail="품목을 찾을 수 없습니다")
@@ -110,7 +111,7 @@ def update_item(item_id: int, payload: ItemUpdate, db: Session = Depends(get_db)
 
 
 @router.delete("/{item_id}", status_code=204)
-def delete_item(item_id: int, db: Session = Depends(get_db)):
+def delete_item(item_id: int, db: Session = Depends(get_db), _=Depends(require_admin)):
     item = db.query(Item).filter(Item.id == item_id).first()
     if not item:
         raise HTTPException(status_code=404, detail="품목을 찾을 수 없습니다")
