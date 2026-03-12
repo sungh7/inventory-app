@@ -106,7 +106,11 @@ def summary(db: Session = Depends(get_db)):
     )
     expiring = (
         db.query(Inventory)
-        .filter(Inventory.expiry_date <= date.today() + timedelta(days=3))
+        .filter(
+            Inventory.expiry_date.isnot(None),
+            Inventory.expiry_date >= date.today(),
+            Inventory.expiry_date <= date.today() + timedelta(days=3),
+        )
         .count()
     )
     today_in = (

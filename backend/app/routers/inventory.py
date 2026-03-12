@@ -35,7 +35,7 @@ def list_inventory(db: Session = Depends(get_db)):
         item = inv.item
         expiring = (
             inv.expiry_date is not None
-            and inv.expiry_date <= today + timedelta(days=3)
+            and today <= inv.expiry_date <= today + timedelta(days=3)
         )
         result.append(InventoryOut(
             item_id=item.id,
@@ -65,7 +65,7 @@ def get_alerts(db: Session = Depends(get_db)):
         item = inv.item
         if inv.quantity <= item.min_stock:
             low_stock.append({"item_id": item.id, "name": item.name, "quantity": inv.quantity, "unit": item.unit})
-        if inv.expiry_date and inv.expiry_date <= soon:
+        if inv.expiry_date and today <= inv.expiry_date <= soon:
             expiring.append({"item_id": item.id, "name": item.name, "expiry_date": str(inv.expiry_date)})
 
     return {"low_stock": low_stock, "expiring_soon": expiring}
