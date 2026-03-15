@@ -100,7 +100,7 @@ export default function LoginPage() {
           </div>
           
           <div className="text-center text-sm text-gray-600">
-            <p>기본 계정: admin / admin1234</p>
+            <p>관리자 계정으로 로그인하세요</p>
           </div>
         </form>
       </div>
