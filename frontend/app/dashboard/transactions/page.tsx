@@ -27,11 +27,10 @@ interface Item {
   unit: string;
 }
 
-const typeLabel: Record<string, string> = { IN: '입고', OUT: '출고', DISPOSE: '폐기' };
+const typeLabel: Record<string, string> = { in: '입고', out: '출고', dispose: '폐기', IN: '입고', OUT: '출고', DISPOSE: '폐기' };
 const typeColor: Record<string, string> = {
-  IN: 'bg-green-100 text-green-800',
-  OUT: 'bg-blue-100 text-blue-800',
-  DISPOSE: 'bg-red-100 text-red-800',
+  in: 'bg-green-100 text-green-800', out: 'bg-blue-100 text-blue-800', dispose: 'bg-red-100 text-red-800',
+  IN: 'bg-green-100 text-green-800', OUT: 'bg-blue-100 text-blue-800', DISPOSE: 'bg-red-100 text-red-800',
 };
 
 export default function TransactionsPage() {
@@ -43,7 +42,7 @@ export default function TransactionsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ item_id: '', type: 'IN', quantity: '', unit_price: '', expiry_date: '', memo: '', staff_id: '' });
+  const [form, setForm] = useState({ item_id: '', type: 'in', quantity: '', unit_price: '', expiry_date: '', memo: '', staff_id: '' });
   const [formError, setFormError] = useState('');
 
   useEffect(() => {
@@ -108,7 +107,7 @@ export default function TransactionsPage() {
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-lg font-semibold">입출고 기록</h2>
           <div className="flex gap-2">
-            {['', 'IN', 'OUT', 'DISPOSE'].map(f => (
+            {['', 'in', 'out', 'dispose'].map(f => (
               <button key={f} onClick={() => setFilter(f)}
                 className={`px-3 py-1 text-sm rounded-md ${filter === f ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 border'}`}>
                 {f === '' ? '전체' : typeLabel[f]}
@@ -131,9 +130,9 @@ export default function TransactionsPage() {
                 {items.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}
               </select>
               <select name="type" value={form.type} onChange={onChange} className="border rounded-md px-3 py-2">
-                <option value="IN">입고</option>
-                <option value="OUT">출고</option>
-                <option value="DISPOSE">폐기</option>
+                <option value="in">입고</option>
+                <option value="out">출고</option>
+                <option value="dispose">폐기</option>
               </select>
               <input name="quantity" type="number" step="0.01" value={form.quantity} onChange={onChange} placeholder="수량" required className="border rounded-md px-3 py-2" />
               <input name="unit_price" type="number" value={form.unit_price} onChange={onChange} placeholder="단가 (선택)" className="border rounded-md px-3 py-2" />
