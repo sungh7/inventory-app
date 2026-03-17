@@ -67,11 +67,18 @@ export default function TopNav() {
           <div className="flex justify-between h-16">
             <div className="flex items-center gap-4">
               <h1 className="text-xl font-bold text-gray-900">재고 관리 시스템</h1>
-              <div className="hidden sm:flex items-center gap-2">
+              <div className="hidden sm:flex items-center gap-2 flex-wrap">
                 {navItem('/dashboard', '대시보드')}
-                {navItem('/dashboard/items/new', '상품 추가')}
-                {navItem('/dashboard/staff', '직원 관리')}
-                {navItem('/dashboard/ai', 'AI 예측')}
+                {navItem('/dashboard/inventory', '재고')}
+                {navItem('/dashboard/transactions', '입출고')}
+                {navItem('/dashboard/menus', '메뉴')}
+                {navItem('/dashboard/sales', '판매')}
+                {navItem('/dashboard/orders', '발주')}
+                {navItem('/dashboard/suppliers', '공급업체')}
+                {navItem('/dashboard/stats', '통계')}
+                {navItem('/dashboard/reports', '리포트')}
+                {navItem('/dashboard/staff', '직원')}
+                {navItem('/dashboard/ai', 'AI')}
               </div>
             </div>
             <div className="flex items-center gap-2">
